@@ -1,3 +1,4 @@
+import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextfield extends StatelessWidget {
@@ -12,6 +13,7 @@ class CustomTextfield extends StatelessWidget {
   final String? Function(String? value)? validatorFunction;
   final void Function(String? value)? onSavedFunction;
   final TextEditingController? controller;
+
   const CustomTextfield({
     super.key,
     this.isFieldPassword = false,
@@ -33,12 +35,19 @@ class CustomTextfield extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: spacing,
       children: [
-        Text(labelText),
+        Text(
+          labelText,
+          style: TextStyle(
+            fontSize: context.bodyFontSize,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         TextFormField(
           controller: controller,
           validator: validatorFunction,
           onSaved: onSavedFunction,
           obscureText: isFieldPassword ? showPassword : false,
+          style: TextStyle(fontSize: context.bodyFontSize),
           decoration: InputDecoration(
             hintText: hintTextValue,
             suffixIcon: (!isFieldPassword)
@@ -49,7 +58,10 @@ class CustomTextfield extends StatelessWidget {
                         ? Icon(Icons.visibility)
                         : Icon(Icons.visibility_off),
                   ),
-            hintStyle: TextStyle(fontWeight: fontWeight),
+            hintStyle: TextStyle(
+              fontWeight: fontWeight,
+              fontSize: context.bodyFontSize,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(radius),
             ),

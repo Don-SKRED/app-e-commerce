@@ -34,49 +34,44 @@ class _SignupScreenState extends State<SignupScreen> {
   void validator() {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      debugPrint("ok");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var isMobile = context.isMobile;
-    var isTablet = Responsive.isTablet(context);
-    var isDesktop = Responsive.isDesktop(context);
-    debugPrint(" isMobile: ${isMobile.toString()}");
-    debugPrint(" isTablet: ${isTablet.toString()}");
-    debugPrint(" isDesktop: ${isDesktop.toString()}");
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(13.0),
+          padding: EdgeInsets.all(context.padding),
           child: Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             key: formKey,
-            child: Column(
-              // spacing: 10,
-              children: [
-                //titre de la page
-                Center(
-                  child: Text(
-                    titleLogin,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                ),
-                //les inputs de login
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    child: Column(
-                      spacing: 10,
+            child: Center(
+              child: SizedBox(
+                width: context.formWidth,
+                child: Column(
+                  spacing: context.spacing,
+                  children: [
+                    //titre de la page
+                    Text(
+                      titleLogin,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.titleFontSize,
+                      ),
+                    ),
+
+                    //les inputs d'inscription
+                    Column(
+                      spacing: context.fieldSpacing * 2,
                       children: [
                         CustomTextfield(
                           hintTextValue: hintTextUsername,
                           fontWeight: FontWeight.w300,
-                          radius: 10,
+                          radius: context.radius,
                           labelText: labelTextUsername,
-                          spacing: 5,
+                          spacing: context.fieldSpacing,
                           validatorFunction: (value) {
                             if (value! == "" || value.isEmpty) {
                               return "Veuillez remplir ce champ";
@@ -93,9 +88,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         CustomTextfield(
                           hintTextValue: hintTextEmail,
                           fontWeight: FontWeight.w300,
-                          radius: 10,
+                          radius: context.radius,
                           labelText: labelTextEmail,
-                          spacing: 5,
+                          spacing: context.fieldSpacing,
                           validatorFunction: (value) {
                             if (value! == "" || value.isEmpty) {
                               return "Veuillez remplir ce champ";
@@ -127,9 +122,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                           hintTextValue: hintTextPassword,
                           fontWeight: FontWeight.w300,
-                          radius: 10,
+                          radius: context.radius,
                           labelText: labelTextPassword,
-                          spacing: 5,
+                          spacing: context.fieldSpacing,
                           validatorFunction: (value) {
                             if (value! == "" || value.isEmpty) {
                               return "Veuillez remplir ce champ";
@@ -137,7 +132,6 @@ class _SignupScreenState extends State<SignupScreen> {
                             if (value.length < 8) {
                               return "Mot de passe trop court";
                             }
-
                             return null;
                           },
                         ),
@@ -145,12 +139,16 @@ class _SignupScreenState extends State<SignupScreen> {
                           controller: confirmPasswordController,
                           showPassword: showConfirmPassword,
                           isFieldPassword: true,
-                          onPressedFunction: () {},
+                          onPressedFunction: () {
+                            setState(() {
+                              showConfirmPassword = !showConfirmPassword;
+                            });
+                          },
                           hintTextValue: hintTextConfirmPassword,
                           fontWeight: FontWeight.w300,
-                          radius: 10,
+                          radius: context.radius,
                           labelText: labelTextConfirmPassword,
-                          spacing: 5,
+                          spacing: context.fieldSpacing,
                           validatorFunction: (value) {
                             if (value! == "" || value.isEmpty) {
                               return "Veuillez remplir ce champ";
@@ -158,7 +156,6 @@ class _SignupScreenState extends State<SignupScreen> {
                             if (value.length < 8) {
                               return "Mot de passe trop court";
                             }
-
                             if (passwordController.value.text != value) {
                               return "le mot de passe ne se ressemble pas";
                             }
@@ -172,32 +169,44 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ],
                     ),
-                  ),
-                ),
-                //Le bouton de connexion
-                SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
+
+                    //Le bouton d'inscription
+                    SizedBox(
+                      height: context.buttonHeight,
+                      width: context.formWidth,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: validator,
+                        child: Text(
+                          labelButton,
+                          style: TextStyle(fontSize: context.bodyFontSize),
+                        ),
+                      ),
                     ),
-                    onPressed: validator,
-                    child: Text(labelButton),
-                  ),
+
+                    //Lien vers le login
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Vous avez déjà un compte?",
+                          style: TextStyle(fontSize: context.bodyFontSize),
+                        ),
+                        TextButton(
+                          onPressed: null,
+                          child: Text(
+                            textButtonValue,
+                            style: TextStyle(fontSize: context.bodyFontSize),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                //Le bouton d'inscription sur "inscrivez-vous ici"
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Vous avez déja un compte?"),
-                      TextButton(onPressed: null, child: Text(textButtonValue)),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
