@@ -1,6 +1,8 @@
+import 'package:app_e_commerce/features/auth/data/repositories/auth_data_repository.dart';
 import 'package:app_e_commerce/features/auth/presentation/widget/custom_textfield.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -13,27 +15,56 @@ class _SignupScreenState extends State<SignupScreen> {
   bool showConfirmPassword = true;
   bool showPassword = true;
   var formKey = GlobalKey<FormState>();
-  String titleLogin = "Inscription";
-  String textButtonValue = "Connectez-vous";
-  String hintTextUsername = "Skred";
-  String labelTextUsername = "Nom d'utilisateur";
-  String hintTextEmail = "Ruddy@gmail.com";
-  String labelTextEmail = "Email";
-  String hintTextPassword = "********";
-  String labelTextPassword = "Mot de passe";
-  String hintTextConfirmPassword = "*********";
-  String labelTextConfirmPassword = "Confirme le mot de passe";
-  String labelButton = "S'inscrire";
+  static const String titleLogin = "Inscription";
+  static const String textButtonValue = "Connectez-vous";
+  static const String hintTextUsername = "Skred";
+  static const String labelTextUsername = "Nom d'utilisateur";
+  static const String hintTextEmail = "Ruddy@gmail.com";
+  static const String labelTextEmail = "Email";
+  static const String hintTextPassword = "********";
+  static const String labelTextPassword = "Mot de passe";
+  static const String hintTextConfirmPassword = "*********";
+  static const String labelTextConfirmPassword = "Confirme le mot de passe";
+  static const String labelButton = "S'inscrire";
+  static const String messageResultSignUp = "Utilisateur créer";
   String? emailValue;
   String? usernameValue;
   String? passwordvalue;
   String? confirmPasswordvalue;
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
-
-  void validator() {
+  var authDataRepository = AuthDataRepository();
+  void validator(ScaffoldMessengerState messenger) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
+      try {
+        await authDataRepository.signup(
+          usernameValue!,
+          emailValue!,
+          passwordvalue!,
+        );
+        messenger.showSnackBar(
+          SnackBar(
+            backgroundColor: const Color.fromARGB(255, 0, 175, 17),
+            content: Text(
+              messageResultSignUp,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      } catch (e) {
+        messenger.showSnackBar(
+          SnackBar(
+            backgroundColor: const Color.fromARGB(255, 175, 158, 0),
+            content: Text(
+              e.toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -179,7 +210,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white,
                         ),
-                        onPressed: validator,
+                        onPressed: () {
+                          if (!context.mounted) return;
+                          validator(ScaffoldMessenger.of(context));
+                          context.pop();
+                        },
                         child: Text(
                           labelButton,
                           style: TextStyle(fontSize: context.bodyFontSize),

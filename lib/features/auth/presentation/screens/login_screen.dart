@@ -1,4 +1,6 @@
+import 'package:app_e_commerce/features/auth/data/repositories/auth_data_repository.dart';
 import 'package:app_e_commerce/features/auth/presentation/widget/custom_textfield.dart';
+import 'package:app_e_commerce/features/exceptions/auth_exception.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,20 +14,46 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool showPassword = true;
-  String titleLogin = "Connexion";
-  String textButtonValue = "Connectez-vous";
-  String hintTextEmail = "Ruddy@gmail.com";
-  String labelTextEmail = "Email";
-  String hintTextPassword = "********";
-  String labelTextPassword = "Mot de passe";
-  String labelButton = "Se connecter";
+  static const String titleLogin = "Connexion";
+  // static const String textButtonValue = "Connectez-vous";
+  static const String hintTextEmail = "Ruddy@gmail.com";
+  static const String labelTextEmail = "Email";
+  static const String hintTextPassword = "********";
+  static const String labelTextPassword = "Mot de passe";
+  static const String labelButton = "Se connecter";
+  static const String messageResultLogin = "Connexion réussie";
   String? email;
   String? password;
   var formKey = GlobalKey<FormState>();
+  var authDataRepository = AuthDataRepository();
 
-  void validator() {
+  Future validator(ScaffoldMessengerState messenger) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
+      try {
+        await authDataRepository.login(email!, password!);
+        messenger.showSnackBar(
+          SnackBar(
+            backgroundColor: const Color.fromARGB(255, 0, 175, 17),
+            content: Text(
+              messageResultLogin,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      } on AuthException catch (e) {
+        messenger.showSnackBar(
+          SnackBar(
+            backgroundColor: const Color.fromARGB(255, 175, 158, 0),
+            content: Text(
+              e.toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -116,7 +144,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white,
                         ),
-                        onPressed: validator,
+                        onPressed: () {
+                          if (!context.mounted) return;
+                          validator(ScaffoldMessenger.of(context));
+                        },
                         child: Text(
                           labelButton,
                           style: TextStyle(fontSize: context.bodyFontSize),
