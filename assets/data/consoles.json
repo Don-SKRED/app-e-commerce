@@ -1,22 +1,22 @@
 [
     {
         "name": "ps5",
-        "image": "assets/console/ps5.png",
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/feature/product/images_hosted/consoles/playstation5.jpg",
         "price": 59.99
     },
     {
         "name": "xbox",
-        "image": "assets/console/xbox.png",
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/feature/product/images_hosted/consoles/xbox_serie.jpg",
         "price": 59.99
     },
     {
         "name": "nintendo",
-        "image": "assets/console/nintendo.png",
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/feature/product/images_hosted/consoles/switch2.jpg",
         "price": 59.99
     },
     {
         "name": "pc",
-        "image": "assets/console/pc.png",
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/feature/product/images_hosted/consoles/pc.jpg",
         "price": 59.99
     }
 ]
