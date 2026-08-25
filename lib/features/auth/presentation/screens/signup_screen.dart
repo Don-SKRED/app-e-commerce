@@ -237,8 +237,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       ),
                     ),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           "Vous avez déjà un compte?",
