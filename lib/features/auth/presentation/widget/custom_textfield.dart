@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 class CustomTextfield extends StatelessWidget {
   final bool isFieldPassword;
-  final bool showPassword;
+
+  /// Quand `isFieldPassword` est vrai : `true` masque le texte saisi.
+  final bool obscureText;
   final String hintTextValue;
   final void Function()? onPressedFunction;
   final FontWeight fontWeight;
@@ -17,7 +19,7 @@ class CustomTextfield extends StatelessWidget {
   const CustomTextfield({
     super.key,
     this.isFieldPassword = false,
-    this.showPassword = false,
+    this.obscureText = false,
     required this.hintTextValue,
     this.onPressedFunction,
     required this.fontWeight,
@@ -46,7 +48,7 @@ class CustomTextfield extends StatelessWidget {
           controller: controller,
           validator: validatorFunction,
           onSaved: onSavedFunction,
-          obscureText: isFieldPassword ? showPassword : false,
+          obscureText: isFieldPassword ? obscureText : false,
           style: TextStyle(fontSize: context.bodyFontSize),
           decoration: InputDecoration(
             hintText: hintTextValue,
@@ -54,7 +56,7 @@ class CustomTextfield extends StatelessWidget {
                 ? null
                 : IconButton(
                     onPressed: onPressedFunction,
-                    icon: (showPassword)
+                    icon: (obscureText)
                         ? Icon(Icons.visibility)
                         : Icon(Icons.visibility_off),
                   ),

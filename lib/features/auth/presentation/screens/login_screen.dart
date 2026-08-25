@@ -1,21 +1,20 @@
-import 'package:app_e_commerce/features/auth/data/repositories/auth_data_repository.dart';
+import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
 import 'package:app_e_commerce/features/auth/presentation/widget/custom_textfield.dart';
-import 'package:app_e_commerce/features/exceptions/auth_exception.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  bool showPassword = true;
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool obscurePassword = true;
   static const String titleLogin = "Connexion";
-  // static const String textButtonValue = "Connectez-vous";
   static const String hintTextEmail = "Ruddy@gmail.com";
   static const String labelTextEmail = "Email";
   static const String hintTextPassword = "********";
@@ -24,41 +23,60 @@ class _LoginScreenState extends State<LoginScreen> {
   static const String messageResultLogin = "Connexion réussie";
   String? email;
   String? password;
-  var formKey = GlobalKey<FormState>();
-  var authDataRepository = AuthDataRepository();
+  final formKey = GlobalKey<FormState>();
 
-  Future validator(ScaffoldMessengerState messenger) async {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-      try {
-        await authDataRepository.login(email!, password!);
-        messenger.showSnackBar(
-          SnackBar(
-            backgroundColor: const Color.fromARGB(255, 0, 175, 17),
-            content: Text(
-              messageResultLogin,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-          ),
-        );
-      } on AuthException catch (e) {
-        messenger.showSnackBar(
-          SnackBar(
-            backgroundColor: const Color.fromARGB(255, 175, 158, 0),
-            content: Text(
-              e.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-          ),
-        );
-      }
-    }
+  void _submit() {
+    if (!formKey.currentState!.validate()) return;
+    formKey.currentState!.save();
+    ref.read(authControllerProvider.notifier).login(email!, password!);
   }
 
   @override
   Widget build(BuildContext context) {
+    // On écoute les changements d'état pour afficher les SnackBars et
+    // naviguer, sans reconstruire tout l'écran à chaque frame.
+    ref.listen<AsyncValue<dynamic>>(authControllerProvider, (previous, next) {
+      final messenger = ScaffoldMessenger.of(context);
+      next.when(
+        data: (user) {
+          if (user == null) return; // état initial, rien à faire
+          messenger.showSnackBar(
+            SnackBar(
+              backgroundColor: const Color.fromARGB(255, 0, 175, 17),
+              content: Text(
+                messageResultLogin,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+          // TODO: rediriger vers l'écran d'accueil une fois qu'il existera,
+          // ex: context.go('/home');
+        },
+        loading: () {},
+        error: (error, stack) {
+          messenger.showSnackBar(
+            SnackBar(
+              backgroundColor: const Color.fromARGB(255, 175, 158, 0),
+              content: Text(
+                error.toString(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    });
+
+    final isLoading = ref.watch(authControllerProvider).isLoading;
+
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -72,7 +90,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   spacing: context.spacing,
                   children: [
-                    //titre de la page
                     SizedBox(
                       height: context.buttonHeight,
                       width: context.formWidth,
@@ -87,20 +104,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    //les inputs de login
                     CustomTextfield(
                       hintTextValue: hintTextEmail,
                       fontWeight: FontWeight.w300,
                       radius: context.radius,
                       labelText: labelTextEmail,
                       spacing: context.fieldSpacing,
-                      onSavedFunction: (value) {
-                        setState(() {
-                          email = value;
-                        });
-                      },
+                      onSavedFunction: (value) => email = value,
                       validatorFunction: (value) {
-                        if (value! == "" || value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return "Veuillez remplir ce champ";
                         }
                         if (!value.contains('@')) {
@@ -110,32 +122,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     CustomTextfield(
-                      showPassword: showPassword,
+                      obscureText: obscurePassword,
                       isFieldPassword: true,
                       onPressedFunction: () {
-                        setState(() {
-                          showPassword = !showPassword;
-                        });
+                        setState(() => obscurePassword = !obscurePassword);
                       },
-                      onSavedFunction: (value) {
-                        setState(() {
-                          password = value;
-                        });
-                      },
+                      onSavedFunction: (value) => password = value,
                       hintTextValue: hintTextPassword,
                       fontWeight: FontWeight.w300,
                       radius: context.radius,
                       labelText: labelTextPassword,
                       spacing: context.fieldSpacing,
                       validatorFunction: (value) {
-                        if (value! == "" || value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return "Veuillez remplir ce champ";
                         }
                         return null;
                       },
                     ),
 
-                    //Le bouton de connexion
                     SizedBox(
                       height: context.buttonHeight,
                       width: context.formWidth,
@@ -144,18 +149,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: Colors.deepPurple,
                           foregroundColor: Colors.white,
                         ),
-                        onPressed: () {
-                          if (!context.mounted) return;
-                          validator(ScaffoldMessenger.of(context));
-                        },
-                        child: Text(
-                          labelButton,
-                          style: TextStyle(fontSize: context.bodyFontSize),
-                        ),
+                        onPressed: isLoading ? null : _submit,
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                labelButton,
+                                style: TextStyle(
+                                  fontSize: context.bodyFontSize,
+                                ),
+                              ),
                       ),
                     ),
 
-                    //Le bouton d'inscription sur "inscrivez-vous ici"
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
