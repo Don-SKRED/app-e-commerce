@@ -1,0 +1,115 @@
+[
+    {
+        "id": "1",
+        "name": "Spider-Man: Miles Morales",
+        "price": 59.99,
+        "image": "assets/games/miles_morales.png",
+        "platform": [
+            "ps5"
+        ],
+        "description": "In the next chapter of the Spider-Man universe, Miles Morales discovers explosive powers that set him apart from his mentor, Peter Parker. Master his unique bio-electric venom attacks and the spectacular camouflage ability while learning to be a hero in his own right as a new threat rises to destroy his home, New York City."
+    },
+    {
+        "id": "2",
+        "name": "The Witcher 3: Wild Hunt",
+        "price": 39.99,
+        "image": "assets/games/witcher_3.png",
+        "platform": [
+            "ps5",
+            "xbox",
+            "pc"
+        ],
+        "description": "A vast open world teeming with monsters, political intrigue, and moral dilemmas. As Geralt of Rivia, a professional monster slayer, you'll hunt beasts and search for Ciri, a young woman with the power to save the world. Features hundreds of hours of gameplay and meaningful choices that shape the narrative."
+    },
+    {
+        "id": "3",
+        "name": "Elden Ring",
+        "price": 59.99,
+        "image": "assets/games/elden_ring.png",
+        "platform": [
+            "ps5",
+            "xbox",
+            "pc"
+        ],
+        "description": "From Software’s latest epic combines the challenging combat of Dark Souls with a breathtaking open world. Explore the Lands Between, a realm shattered by the Elden Ring, and battle demigods to become the Elden Lord. Unparalleled freedom in exploration and character customization."
+    },
+    {
+        "id": "4",
+        "name": "God of War Ragnarök",
+        "price": 59.99,
+        "image": "assets/games/ragnarok.png",
+        "platform": [
+            "ps5"
+        ],
+        "description": "The highly anticipated sequel to 2018’s God of War. Kratos and Atreus embark on a perilous journey across the Nine Realms to prevent the prophesied end of the world. Featuring brutal combat, a deep emotional story, and stunning visuals."
+    },
+    {
+        "id": "5",
+        "name": "Grand Theft Auto V",
+        "price": 29.99,
+        "image": "assets/games/gta5.png",
+        "platform": [
+            "ps5",
+            "xbox",
+            "pc"
+        ],
+        "description": "A crime epic set in the sprawling metropolis of Los Santos. Play as three distinct characters – Franklin, Michael, and Trevor – as they pull off daring heists and navigate the criminal underworld. Includes the massive GTA Online universe for endless multiplayer fun."
+    },
+    {
+        "id": "6",
+        "name": "Cyberpunk 2077",
+        "price": 49.99,
+        "image": "assets/games/cyberpunk.png",
+        "platform": [
+            "ps5",
+            "pc",
+            "xbox"
+        ],
+        "description": "Step into Night City, a megalopolis obsessed with power, glamour, and body modification. Play as V, a mercenary outlaw, on a quest for a unique implant that holds the key to immortality. A deep RPG experience with branching narratives and futuristic action."
+    },
+    {
+        "id": "7",
+        "name": "Red Dead Redemption 2",
+        "price": 39.99,
+        "image": "assets/games/rdr2.png",
+        "platform": [
+            "ps5",
+            "xbox",
+            "pc"
+        ],
+        "description": "An immersive open-world Western that tells the story of Arthur Morgan and the Van der Linde gang as they fight for survival in the fading days of the Wild West. Features a gripping narrative, stunning landscapes, and deep gameplay mechanics."
+    },
+    {
+        "id": "8",
+        "name": "Hogwarts Legacy",
+        "price": 59.99,
+        "image": "assets/games/hogwarts.png",
+        "platform": [
+            "ps5",
+            "xbox",
+            "pc"
+        ],
+        "description": "Experience the Wizarding World in the 1800s. Create your own witch or wizard, attend classes at Hogwarts, learn powerful spells, and explore a vast, magical open world. Uncover an ancient secret that threatens the wizarding world."
+    },
+    {
+        "id": "9",
+        "name": "Horizon Forbidden West",
+        "price": 59.99,
+        "image": "assets/games/horizon.png",
+        "platform": [
+            "ps5",
+            "pc"
+        ],
+        "description": "Aloy continues her journey in a stunning post-apocalyptic world where robotic creatures roam the land. Explore dangerous new territories, discover advanced technologies, and uncover the truth behind a deadly blight threatening life on Earth."
+    },
+    {
+        "id": "10",
+        "name": "Resident Evil 4 (Remake)",
+        "price": 59.99,
+        "image": "assets/games/re4.png",
+        "platform": [
+            "ps5"
+        ],
+        "description": "A reimagined classic. Leon S. Kennedy is sent to rescue the President’s daughter from a mysterious cult in rural Europe. Experience tense survival horror, strategic combat, and a gripping story with modern graphics and gameplay."
+    }
+]
