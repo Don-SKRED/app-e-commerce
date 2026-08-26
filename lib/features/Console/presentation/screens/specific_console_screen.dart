@@ -1,133 +1,150 @@
+import 'package:app_e_commerce/features/Console/domain/models/console_model.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SpecificConsoleScreen extends StatelessWidget {
-  const SpecificConsoleScreen({super.key});
+  final Console? console;
+
+  const SpecificConsoleScreen({super.key, this.console});
 
   @override
   Widget build(BuildContext context) {
+    final displayTitle = console?.name ?? "Nom console";
+    final displayMarque = console?.marque ?? "Marque";
+    final displayStorage = console != null ? "${console!.storageCapacity.toInt()} Go" : "0 Go";
+    final displayPrice = console != null ? "${console!.price} €" : "0.00 €";
+    final displayStock = console != null ? "${console!.stock}" : "0";
+    final displayDescription = console?.description ?? "Aucune description disponible";
+    final displayImage = console?.image;
+
     return Scaffold(
-      body: Center(
-        // heightFactor: 0,
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Stack(
             children: [
               Padding(
-                padding: EdgeInsets.only(
-                  left: context.padding,
-                  right: context.padding,
-                ),
-                child: Container(
-                  width: context.containerGameWidth,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: context.spacing,
-                    children: [
-                      Container(
-                        height: context.heightContainerConsole,
-                        width: MediaQuery.sizeOf(context).width,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color.fromARGB(255, 233, 233, 233),
-                              const Color.fromARGB(255, 223, 218, 218),
-                            ],
+                padding: EdgeInsets.symmetric(horizontal: context.padding),
+                child: Center(
+                  child: Container(
+                    width: context.containerGameWidth,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: context.spacing,
+                      children: [
+                        Container(
+                          height: context.heightContainerConsole,
+                          width: MediaQuery.sizeOf(context).width,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 233, 233, 233),
+                                Color.fromARGB(255, 223, 218, 218),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(200),
+                              bottomRight: Radius.circular(200),
+                            ),
                           ),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(200),
-
-                            bottomRight: Radius.circular(200),
+                          child: Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                height: context.consoleImageSize,
+                                width: context.consoleImageSize,
+                                color: Colors.grey.shade300,
+                                child: displayImage != null && displayImage.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: displayImage,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                        errorWidget: (context, url, error) => const Icon(
+                                          Icons.sports_esports,
+                                          size: 50,
+                                          color: Colors.grey,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.sports_esports,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      ),
+                              ),
+                            ),
                           ),
                         ),
-                        child: Center(
-                          child: Container(
-                            color: Colors.purple,
-                            height: context.consoleImageSize,
-                            width: context.consoleImageSize,
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: SizedBox(
+                        Center(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                color: Colors.amber,
-
-                                child: Row(
-                                  spacing: context.spacingRow,
-                                  children: [
-                                    Text(
-                                      "Nom console",
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      displayTitle,
                                       style: TextStyle(
                                         fontSize: context.textTitleSize,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    Text(
-                                      "storage capacity",
-                                      style: TextStyle(
-                                        fontSize: context.bodyFontSize,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                spacing: 200,
-                                children: [
-                                  Container(
-                                    color: Colors.red,
-                                    height: 50,
-                                    child: Text(
-                                      "Price: 15000 Ar",
-                                      style: TextStyle(
-                                        fontSize: context.bodyFontSize,
-                                      ),
-                                    ),
                                   ),
-                                  Container(
-                                    color: Colors.green,
-                                    height: 50,
-                                    child: Text(
-                                      "Stock: 100",
-                                      style: TextStyle(
-                                        fontSize: context.bodyFontSize,
-                                      ),
+                                  Text(
+                                    "$displayMarque • $displayStorage",
+                                    style: TextStyle(
+                                      fontSize: context.bodyFontSize,
+                                      color: Colors.grey.shade700,
                                     ),
                                   ),
                                 ],
                               ),
-                              Container(
-                                color: Colors.blue,
-                                // height: 50,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-
-                                  children: [
-                                    Text(
-                                      "Descritpion",
-                                      style: TextStyle(
-                                        fontSize: context.bodyFontSize,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Prix : $displayPrice",
+                                    style: TextStyle(
+                                      fontSize: context.bodyFontSize,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green.shade700,
                                     ),
-                                    Wrap(
-                                      children: [
-                                        Text(
-                                          "Descritpion fdsj kdfs lfjdsk qjlmfjdksljqkjfdksfj fkldsfj kldsjfklsqmj fkldsjmqf skql mjkl mjkqlsjd fkdlqjsk ljqk lsjskl jlj fqkdlsfjlsdf",
-                                          style: TextStyle(
-                                            fontSize: context.bodyFontSize,
-                                          ),
-                                        ),
-                                      ],
+                                  ),
+                                  Text(
+                                    "Stock : $displayStock",
+                                    style: TextStyle(
+                                      fontSize: context.bodyFontSize,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Container(
+                              const SizedBox(height: 16),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Description",
+                                    style: TextStyle(
+                                      fontSize: context.bodyFontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    displayDescription,
+                                    style: TextStyle(
+                                      fontSize: context.bodyFontSize,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              SizedBox(
                                 width: MediaQuery.sizeOf(context).width,
                                 height: context.buttonHeight,
                                 child: ElevatedButton(
@@ -136,20 +153,24 @@ class SpecificConsoleScreen extends StatelessWidget {
                                     backgroundColor: Colors.purple,
                                     foregroundColor: Colors.white,
                                   ),
-                                  child: Text("Ajouter au panier"),
+                                  child: const Text("Ajouter au panier"),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: null,
-                icon: Icon(Icons.arrow_back, color: Colors.black),
+              Positioned(
+                top: 8,
+                left: 8,
+                child: IconButton(
+                  onPressed: () => context.pop(),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                ),
               ),
             ],
           ),
