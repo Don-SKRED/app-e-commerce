@@ -54,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           );
           // TODO: rediriger vers l'écran d'accueil une fois qu'il existera,
-          // ex: context.go('/home');
+          context.go('/Home');
         },
         loading: () {},
         error: (error, stack) {

@@ -34,6 +34,7 @@ abstract class Repository<T> {
     List jsonList = jsonDecode(jsonString);
 
     List<T> list = jsonList.map((json) => fromJson(json)).toList();
+    print("list: $list");
     return list;
   }
 
