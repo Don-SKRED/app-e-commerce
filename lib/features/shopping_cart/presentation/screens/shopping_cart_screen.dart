@@ -115,7 +115,9 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                     itemBuilder: (context, index) {
                       final item = cart[index];
                       return Padding(
-                        padding: EdgeInsets.only(bottom: context.fieldSpacing * 2),
+                        padding: EdgeInsets.only(
+                          bottom: context.fieldSpacing * 2,
+                        ),
                         child: Card(
                           elevation: 2,
                           child: ListTile(
@@ -137,7 +139,9 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                             ),
                             subtitle: Text(
                               "${item.product.price.toStringAsFixed(2)} € × ${item.quantity}",
-                              style: TextStyle(fontSize: context.bodyFontSize - 2),
+                              style: TextStyle(
+                                fontSize: context.bodyFontSize - 2,
+                              ),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -154,7 +158,10 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                                 IconButton(
                                   onPressed: () {
                                     ref
-                                        .read(shoppingCartControllerProvider.notifier)
+                                        .read(
+                                          shoppingCartControllerProvider
+                                              .notifier,
+                                        )
                                         .remove(item);
                                   },
                                   icon: const Icon(
