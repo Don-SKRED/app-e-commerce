@@ -107,6 +107,32 @@ class Responsive {
     return 300;
   }
 
+  static double widthCard(BuildContext context) {
+    if (isDesktop(context)) return 380;
+    if (isTablet(context)) return 340;
+    return 300;
+  }
+
+  static double heightCard(BuildContext context) {
+    if (isDesktop(context)) return 110;
+    if (isTablet(context)) return 90;
+    return 70;
+  }
+
+  /// Hauteur du bottomSheet panier (total + bouton)
+  static double bottomSheetHeight(BuildContext context) {
+    if (isDesktop(context)) return 140;
+    if (isTablet(context)) return 120;
+    return 100;
+  }
+
+  /// Padding bas de la ListView pour ne pas être caché par le bottomSheet
+  static double bottomSheetClearance(BuildContext context) {
+    if (isDesktop(context)) return 160;
+    if (isTablet(context)) return 140;
+    return 116;
+  }
+
   static double textTitleSize(BuildContext context) {
     if (isDesktop(context)) return 25;
     if (isTablet(context)) return 22;
@@ -136,4 +162,7 @@ extension ResponsiveExtension on BuildContext {
   double get containerGameWidth => Responsive.containerGameWidth(this);
   double get consoleImageSize => Responsive.consoleImageSize(this);
   double get heightContainerConsole => Responsive.heightContainerConsole(this);
+  double get heightCard => Responsive.heightCard(this);
+  double get bottomSheetHeight => Responsive.bottomSheetHeight(this);
+  double get bottomSheetClearance => Responsive.bottomSheetClearance(this);
 }

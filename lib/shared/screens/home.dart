@@ -2,7 +2,7 @@ import 'package:app_e_commerce/features/Console/data/repositories/console_data.d
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
 import 'package:app_e_commerce/features/games/data/repositories/game_data.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
-import 'package:app_e_commerce/shared/widgets/card_product.dart';
+import 'package:app_e_commerce/features/products/presentation/widgets/card_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

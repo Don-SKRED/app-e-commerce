@@ -1,5 +1,6 @@
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
 import 'package:app_e_commerce/shared/services/repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GameDataRepository extends Repository<Game> {
   @override
@@ -18,3 +19,7 @@ class GameDataRepository extends Repository<Game> {
     return item.toJson();
   }
 }
+
+final gameDataRepositoryProvider = Provider<GameDataRepository>((ref) {
+  return GameDataRepository();
+});

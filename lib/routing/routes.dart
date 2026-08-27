@@ -5,6 +5,7 @@ import 'package:app_e_commerce/features/auth/presentation/screens/signup_screen.
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
 import 'package:app_e_commerce/features/games/presentation/screens/specific_game_screen.dart';
 import 'package:app_e_commerce/shared/screens/home.dart';
+import 'package:app_e_commerce/shared/widgets/navbar_widget.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -12,6 +13,10 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(path: "/login", builder: (context, state) => const LoginScreen()),
     GoRoute(path: "/signup", builder: (context, state) => const SignupScreen()),
+    GoRoute(
+      path: "/navbar",
+      builder: (context, state) => const NavigationBarWidget(),
+    ),
     GoRoute(
       path: "/specificonsole",
       builder: (context, state) {
