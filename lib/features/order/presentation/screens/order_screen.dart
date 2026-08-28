@@ -1,5 +1,4 @@
 import 'package:app_e_commerce/features/order/domain/models/order_item_model.dart';
-import 'package:app_e_commerce/features/order/domain/models/order_model.dart';
 import 'package:app_e_commerce/features/order/presentation/controllers/order_controller.dart';
 import 'package:app_e_commerce/shared/utils/date_utils.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
@@ -34,7 +33,6 @@ class OrderScreen extends ConsumerWidget {
                 return ListView.builder(
                   itemCount: orders.length,
                   itemBuilder: (context, index) {
-                    print("${orders[index].orderItems}");
                     return Card(
                       elevation: 2,
                       child: Padding(

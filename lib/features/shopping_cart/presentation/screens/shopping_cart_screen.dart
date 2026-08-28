@@ -4,13 +4,10 @@ import 'package:app_e_commerce/features/order/domain/models/order_item_model.dar
 import 'package:app_e_commerce/features/order/domain/models/order_model.dart';
 import 'package:app_e_commerce/features/order/presentation/controllers/order_controller.dart';
 import 'package:app_e_commerce/features/order/presentation/controllers/order_item_controller.dart';
-import 'package:app_e_commerce/features/products/domain/product_model.dart';
-import 'package:app_e_commerce/features/shopping_cart/domain/shopping_cart_model.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ShoppingCartScreen extends ConsumerStatefulWidget {
   const ShoppingCartScreen({super.key});
@@ -27,10 +24,6 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
     // final order = ref.watch(orderControllerProvider);
     void addOrderItems() async {
       if (cart.isNotEmpty) {
-        for (var item in cart) {
-          print(item.product);
-          print(item.quantity);
-        }
         final int newId = await ref
             .read(orderItemRepositoryProvider)
             .generateNewId();
@@ -45,10 +38,7 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
           orderItems.add(orderItem);
         }
       }
-      for (var item in orderItems) {
-        print(item.product.name);
-        print(item.quantity);
-      }
+
       final int newIdOrder = await ref
           .read(orderRepositoryProvider)
           .generateNewId();
