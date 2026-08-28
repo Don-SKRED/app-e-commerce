@@ -1,6 +1,9 @@
 import 'package:app_e_commerce/features/Console/data/repositories/console_data.dart';
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
 import 'package:app_e_commerce/features/games/data/repositories/game_data.dart';
+import 'package:app_e_commerce/features/products/application/services/filter_services.dart';
+import 'package:app_e_commerce/features/products/application/services/sort_services.dart';
+import 'package:app_e_commerce/features/products/domain/product_model.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:app_e_commerce/features/products/presentation/widgets/card_product.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +20,41 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   GameDataRepository gameDataRepository = GameDataRepository();
   ConsoleDataRepository consoleDataRepository = ConsoleDataRepository();
+  final TextEditingController _searchController = TextEditingController();
+  String searchQuery = "";
+
+  List<String> sort = [
+    "Tri par nom(croissante)",
+    "Tri par nom(décroissante)",
+    "Tri par prix(croissante)",
+    "Tri par prix(décroissante)",
+  ];
+  String? selectedSort;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _applySort(List<Product> products) {
+    if (selectedSort == null) return;
+    switch (selectedSort) {
+      case "Tri par nom(croissante)":
+        sortByName(products);
+        break;
+      case "Tri par nom(décroissante)":
+        sortByDesc(products);
+        break;
+      case "Tri par prix(croissante)":
+        sortByPriceAsc(products);
+        break;
+      case "Tri par prix(décroissante)":
+        sortByPriceDesc(products);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authControllerProvider).asData?.value;
@@ -30,7 +68,24 @@ class _HomeState extends ConsumerState<Home> {
         : 2;
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
+        actions: [
+          PopupMenuButton<String>(
+            initialValue: selectedSort,
+            onSelected: (value) {
+              setState(() {
+                selectedSort = value;
+              });
+            },
+            itemBuilder: (context) {
+              return sort.map((element) {
+                return PopupMenuItem<String>(
+                  value: element,
+                  child: Text(element),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: Center(
         child: ConstrainedBox(
@@ -108,6 +163,37 @@ class _HomeState extends ConsumerState<Home> {
                             ),
                           ),
                           SizedBox(height: context.spacing),
+                          TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() {
+                                searchQuery = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Rechercher un produit...",
+                              prefixIcon: const Icon(Icons.search),
+                              suffixIcon: searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear),
+                                      onPressed: () {
+                                        setState(() {
+                                          searchQuery = "";
+                                          _searchController.clear();
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: context.spacing),
                           Text(
                             "Catégories",
                             style: TextStyle(
@@ -157,7 +243,16 @@ class _HomeState extends ConsumerState<Home> {
                         }
                         if (asyncSnapshot.hasData &&
                             asyncSnapshot.data!.isNotEmpty) {
-                          var data = asyncSnapshot.data!;
+                          var data = List<Product>.from(asyncSnapshot.data!);
+                          data = filterBySearch(data, searchQuery);
+                          _applySort(data);
+
+                          if (data.isEmpty) {
+                            return const Center(
+                              child: Text("Aucun produit ne correspond à votre recherche"),
+                            );
+                          }
+
                           return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -201,7 +296,16 @@ class _HomeState extends ConsumerState<Home> {
                         }
                         if (asyncSnapshot.hasData &&
                             asyncSnapshot.data!.isNotEmpty) {
-                          var data = asyncSnapshot.data!;
+                          var data = List<Product>.from(asyncSnapshot.data!);
+                          data = filterBySearch(data, searchQuery);
+                          _applySort(data);
+
+                          if (data.isEmpty) {
+                            return const Center(
+                              child: Text("Aucun produit ne correspond à votre recherche"),
+                            );
+                          }
+
                           return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -238,3 +342,5 @@ class _HomeState extends ConsumerState<Home> {
     );
   }
 }
+
+
