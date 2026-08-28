@@ -34,15 +34,10 @@ class ShoppingCartController extends Notifier<List<ShoppingCartModel>> {
   }
 }
 
-double totalPrice(List<ShoppingCartModel> cart) {
-  double total = 0;
-  for (var item in cart) {
-    total += item.product.price * item.quantity;
-  }
-  return total;
-}
+// Le calcul du prix total est défini dans la couche application :
+// shopping_cart/application/shopping_cart_service.dart → calculateTotal()
 
 final shoppingCartControllerProvider =
     NotifierProvider<ShoppingCartController, List<ShoppingCartModel>>(
-      ShoppingCartController.new,
-    );
+  ShoppingCartController.new,
+);

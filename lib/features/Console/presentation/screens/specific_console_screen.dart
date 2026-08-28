@@ -1,7 +1,7 @@
 import 'package:app_e_commerce/features/Console/domain/models/console_model.dart';
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
 import 'package:app_e_commerce/features/favorites/presentation/controllers/favorites_controller.dart';
-import 'package:app_e_commerce/features/games/presentation/providers/quantity_provider.dart';
+import 'package:app_e_commerce/features/games/application/quantity_service.dart';
 import 'package:app_e_commerce/features/shopping_cart/domain/shopping_cart_model.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
@@ -18,7 +18,7 @@ class SpecificConsoleScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authControllerProvider).value;
-    final quantity = ref.watch(quantityProvider);
+    final quantity = ref.watch(quantityServiceProvider);
     final isFavorite = console != null &&
         ref.watch(favoritesControllerProvider).any((item) => item.id == console!.id);
 
@@ -155,7 +155,7 @@ class SpecificConsoleScreen extends ConsumerWidget {
                                         IconButton(
                                           onPressed: () {
                                             ref
-                                                .read(quantityProvider.notifier)
+                                                .read(quantityServiceProvider.notifier)
                                                 .decrement();
                                           },
                                           icon: Icon(Icons.remove),
@@ -165,7 +165,7 @@ class SpecificConsoleScreen extends ConsumerWidget {
                                           child: Consumer(
                                             builder: (context, ref, child) {
                                               final quantity = ref.watch(
-                                                quantityProvider,
+                                                quantityServiceProvider,
                                               );
                                               return Text("$quantity");
                                             },
@@ -174,7 +174,7 @@ class SpecificConsoleScreen extends ConsumerWidget {
                                         IconButton(
                                           onPressed: () {
                                             ref
-                                                .read(quantityProvider.notifier)
+                                                .read(quantityServiceProvider.notifier)
                                                 .increment(
                                                   int.parse(displayStock),
                                                 );

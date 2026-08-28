@@ -1,7 +1,6 @@
 import 'package:app_e_commerce/shared/models/user_model.dart';
 import 'package:app_e_commerce/features/auth/exceptions/auth_exception.dart';
 import 'package:app_e_commerce/shared/services/repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthDataRepository extends Repository<User> {
   @override
@@ -45,7 +44,3 @@ class AuthDataRepository extends Repository<User> {
     await add(newUser);
   }
 }
-
-final authDataRepositoryProvider = Provider<AuthDataRepository>((ref) {
-  return AuthDataRepository();
-});

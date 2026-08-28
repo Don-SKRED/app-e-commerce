@@ -1,6 +1,5 @@
 import 'package:app_e_commerce/features/Console/domain/models/console_model.dart';
 import 'package:app_e_commerce/shared/services/repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConsoleDataRepository extends Repository<Console> {
   @override
@@ -19,7 +18,3 @@ class ConsoleDataRepository extends Repository<Console> {
     return item.toJson();
   }
 }
-
-final consoleDataRepositoryProvider = Provider<ConsoleDataRepository>((ref) {
-  return ConsoleDataRepository();
-});

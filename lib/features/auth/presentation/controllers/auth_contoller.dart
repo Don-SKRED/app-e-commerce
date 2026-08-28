@@ -1,4 +1,4 @@
-import 'package:app_e_commerce/features/auth/data/repositories/auth_data_repository.dart';
+import 'package:app_e_commerce/features/auth/application/auth_service.dart';
 import 'package:app_e_commerce/shared/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,16 +19,14 @@ class AuthController extends AsyncNotifier<User?> {
   Future<void> login(String email, String password) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() {
-      return ref.read(authDataRepositoryProvider).login(email, password);
+      return ref.read(authServiceProvider).login(email, password);
     });
   }
 
   Future<void> signup(String username, String email, String password) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repo = ref.read(authDataRepositoryProvider);
-      await repo.signup(username, email, password);
-      return repo.login(email, password);
+    state = await AsyncValue.guard(() {
+      return ref.read(authServiceProvider).signup(username, email, password);
     });
   }
 

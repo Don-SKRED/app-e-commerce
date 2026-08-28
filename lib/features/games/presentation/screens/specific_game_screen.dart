@@ -1,7 +1,7 @@
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
 import 'package:app_e_commerce/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
-import 'package:app_e_commerce/features/games/presentation/providers/quantity_provider.dart';
+import 'package:app_e_commerce/features/games/application/quantity_service.dart';
 import 'package:app_e_commerce/features/shopping_cart/domain/shopping_cart_model.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
@@ -18,7 +18,7 @@ class SpecificGameScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authControllerProvider).value;
-    final quantity = ref.watch(quantityProvider); // écoute les changements
+    final quantity = ref.watch(quantityServiceProvider); // écoute les changements
     final isFavorite = game != null &&
         ref.watch(favoritesControllerProvider).any((item) => item.id == game!.id);
 
@@ -106,7 +106,7 @@ class SpecificGameScreen extends ConsumerWidget {
                                   IconButton(
                                     onPressed: () {
                                       ref
-                                          .read(quantityProvider.notifier)
+                                          .read(quantityServiceProvider.notifier)
                                           .decrement();
                                     },
                                     icon: Icon(Icons.remove),
@@ -115,7 +115,7 @@ class SpecificGameScreen extends ConsumerWidget {
                                   IconButton(
                                     onPressed: () {
                                       ref
-                                          .read(quantityProvider.notifier)
+                                          .read(quantityServiceProvider.notifier)
                                           .increment(int.parse(displayStock));
                                     },
                                     icon: Icon(Icons.add),

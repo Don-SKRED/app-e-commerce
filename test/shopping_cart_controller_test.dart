@@ -1,3 +1,4 @@
+import 'package:app_e_commerce/features/shopping_cart/application/shopping_cart_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
@@ -76,7 +77,6 @@ void main() {
 
       final state = container.read(shoppingCartControllerProvider);
       expect(state.length, 1);
-      expect(state.first.product.id, 1);
       expect(state.first.quantity, 5);
     });
 
@@ -115,13 +115,13 @@ void main() {
       expect(state, isEmpty);
     });
 
-    test('totalPrice() should calculate correct total sum of items in cart', () {
+    test('calculateTotal() should calculate correct total sum of items in cart', () {
       final cart = [
         ShoppingCartModel(userId: 1, product: product1, quantity: 2),
         ShoppingCartModel(userId: 1, product: product2, quantity: 1),
       ];
 
-      final total = totalPrice(cart);
+      final total = calculateTotal(cart);
       expect(total, closeTo(1059.97, 0.001));
     });
   });

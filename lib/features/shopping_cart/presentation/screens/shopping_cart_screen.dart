@@ -1,9 +1,9 @@
-import 'package:app_e_commerce/features/order/data/repositories/order_item_repository.dart';
-import 'package:app_e_commerce/features/order/data/repositories/order_repository.dart';
+import 'package:app_e_commerce/features/order/application/order_service.dart';
 import 'package:app_e_commerce/features/order/domain/models/order_item_model.dart';
 import 'package:app_e_commerce/features/order/domain/models/order_model.dart';
 import 'package:app_e_commerce/features/order/presentation/controllers/order_controller.dart';
 import 'package:app_e_commerce/features/order/presentation/controllers/order_item_controller.dart';
+import 'package:app_e_commerce/features/shopping_cart/application/shopping_cart_service.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
       Order newOrder = Order(
         id: newIdOrder,
         date: DateTime.now(),
-        total: totalPrice(cart),
+        total: calculateTotal(cart),
         orderItems: orderItems,
       );
       ref.read(orderControllerProvider.notifier).addOrder(newOrder);
@@ -90,7 +90,7 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                             ),
                           ),
                           Text(
-                            "${totalPrice(cart).toStringAsFixed(2)} €",
+                            "${calculateTotal(cart).toStringAsFixed(2)} €",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: context.textTitleSize,
