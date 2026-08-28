@@ -1,0 +1,46 @@
+[
+    {
+        "id": 1,
+        "name": "PlayStation 5",
+        "price": 549.99,
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/develop/images_hosted/consoles/playstation5.jpg",
+        "marque": "Sony",
+        "storageCapacity": 825,
+        "joystick": true,
+        "stock": 5,
+        "description": "Console nouvelle génération avec SSD ultra-rapide, ray tracing et manette DualSense à retour haptique."
+    },
+    {
+        "id": 2,
+        "name": "Xbox Series X",
+        "price": 499.99,
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/develop/images_hosted/consoles/xbox_serie.jpg",
+        "marque": "Microsoft",
+        "storageCapacity": 1000,
+        "joystick": true,
+        "stock": 4,
+        "description": "La console la plus puissante de Microsoft, 4K natif à 60 images par seconde, rétrocompatible avec des milliers de jeux."
+    },
+    {
+        "id": 3,
+        "name": "Nintendo Switch 2",
+        "price": 399.99,
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/develop/images_hosted/consoles/switch2.jpg",
+        "marque": "Nintendo",
+        "storageCapacity": 256,
+        "joystick": true,
+        "stock": 6,
+        "description": "Console hybride nouvelle génération, jouable en mode salon, portable ou table, avec Joy-Con améliorés."
+    },
+    {
+        "id": 4,
+        "name": "PC Gaming",
+        "price": 1299.99,
+        "image": "https://raw.githubusercontent.com/Don-SKRED/app-e-commerce/develop/images_hosted/consoles/pc.jpg",
+        "marque": "Custom Build",
+        "storageCapacity": 1000,
+        "joystick": false,
+        "stock": 3,
+        "description": "Tour PC gaming assemblée sur mesure, carte graphique dédiée, idéale pour le jeu haute performance et le streaming."
+    }
+]
