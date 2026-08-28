@@ -1,4 +1,5 @@
 import 'package:app_e_commerce/features/order/presentation/screens/order_screen.dart';
+import 'package:app_e_commerce/features/profile/presentation/screens/profile_screen.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/screens/shopping_cart_screen.dart';
 import 'package:app_e_commerce/shared/screens/home.dart';
@@ -28,6 +29,7 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
       const Home(),
       const ShoppingCartScreen(),
       const OrderScreen(),
+      const ProfileScreen(),
     ];
 
     List<BottomNavigationBarItem> items = [];
@@ -53,6 +55,12 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
       const BottomNavigationBarItem(
         icon: Icon(Icons.list_alt_sharp, size: 30),
         label: 'Commandes',
+      ),
+    );
+    items.add(
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.person, size: 30),
+        label: 'Profil',
       ),
     );
 

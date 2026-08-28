@@ -4,6 +4,7 @@ import 'package:app_e_commerce/features/auth/presentation/screens/login_screen.d
 import 'package:app_e_commerce/features/auth/presentation/screens/signup_screen.dart';
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
 import 'package:app_e_commerce/features/games/presentation/screens/specific_game_screen.dart';
+import 'package:app_e_commerce/features/profile/presentation/screens/about_screen.dart';
 import 'package:app_e_commerce/shared/screens/home.dart';
 import 'package:app_e_commerce/shared/widgets/navbar_widget.dart';
 import 'package:go_router/go_router.dart';
@@ -32,5 +33,6 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(path: "/Home", builder: (context, state) => const Home()),
+    GoRoute(path: "/about", builder: (context, state) => const AboutScreen()),
   ],
 );

@@ -1,5 +1,5 @@
 import 'package:app_e_commerce/features/auth/data/repositories/auth_data_repository.dart';
-import 'package:app_e_commerce/features/auth/domain/models/user_model.dart';
+import 'package:app_e_commerce/shared/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // --- Déclaration manuelle du provider ---
