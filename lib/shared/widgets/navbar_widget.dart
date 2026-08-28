@@ -1,4 +1,4 @@
-import 'package:app_e_commerce/features/command/presentation/screens/command_screen.dart';
+import 'package:app_e_commerce/features/order/presentation/screens/order_screen.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/screens/shopping_cart_screen.dart';
 import 'package:app_e_commerce/shared/screens/home.dart';
@@ -27,7 +27,7 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
     final tabs = [
       const Home(),
       const ShoppingCartScreen(),
-      const CommandScreen(),
+      const OrderScreen(),
     ];
 
     List<BottomNavigationBarItem> items = [];

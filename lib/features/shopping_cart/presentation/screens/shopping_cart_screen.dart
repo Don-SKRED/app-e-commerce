@@ -1,7 +1,16 @@
+import 'package:app_e_commerce/features/order/data/repositories/order_item_repository.dart';
+import 'package:app_e_commerce/features/order/data/repositories/order_repository.dart';
+import 'package:app_e_commerce/features/order/domain/models/order_item_model.dart';
+import 'package:app_e_commerce/features/order/domain/models/order_model.dart';
+import 'package:app_e_commerce/features/order/presentation/controllers/order_controller.dart';
+import 'package:app_e_commerce/features/order/presentation/controllers/order_item_controller.dart';
+import 'package:app_e_commerce/features/products/domain/product_model.dart';
+import 'package:app_e_commerce/features/shopping_cart/domain/shopping_cart_model.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ShoppingCartScreen extends ConsumerStatefulWidget {
   const ShoppingCartScreen({super.key});
@@ -14,6 +23,44 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(shoppingCartControllerProvider);
+    final orderItems = ref.watch(orderItemControllerProvider);
+    // final order = ref.watch(orderControllerProvider);
+    void addOrderItems() async {
+      if (cart.isNotEmpty) {
+        for (var item in cart) {
+          print(item.product);
+          print(item.quantity);
+        }
+        final int newId = await ref
+            .read(orderItemRepositoryProvider)
+            .generateNewId();
+
+        for (int i = 0; i < cart.length; i++) {
+          OrderItem orderItem = OrderItem(
+            id: newId,
+            quantity: cart[i].quantity,
+            unitPrice: cart[i].product.price,
+            product: cart[i].product,
+          );
+          orderItems.add(orderItem);
+        }
+      }
+      for (var item in orderItems) {
+        print(item.product.name);
+        print(item.quantity);
+      }
+      final int newIdOrder = await ref
+          .read(orderRepositoryProvider)
+          .generateNewId();
+
+      Order newOrder = Order(
+        id: newIdOrder,
+        date: DateTime.now(),
+        total: totalPrice(cart),
+        orderItems: orderItems,
+      );
+      ref.read(orderControllerProvider.notifier).addOrder(newOrder);
+    }
 
     return Scaffold(
       // --- Bottom sheet : total + bouton commande ---
@@ -65,8 +112,12 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                         height: context.buttonHeight,
                         child: ElevatedButton.icon(
                           onPressed: () {
+                            addOrderItems(); // ref
                             ref
                                 .read(shoppingCartControllerProvider.notifier)
+                                .clear();
+                            ref
+                                .read(orderItemControllerProvider.notifier)
                                 .clear();
                           },
                           icon: const Icon(Icons.shopping_bag_outlined),

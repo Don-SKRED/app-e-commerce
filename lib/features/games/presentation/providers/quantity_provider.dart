@@ -1,4 +1,3 @@
-// 1. Le Notifier
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuantityProvider extends Notifier<int> {
@@ -23,6 +22,8 @@ class QuantityProvider extends Notifier<int> {
 }
 
 // 2. Le Provider (déclaré manuellement)
-final quantityProvider = NotifierProvider<QuantityProvider, int>(() {
-  return QuantityProvider();
-});
+final quantityProvider = NotifierProvider.autoDispose<QuantityProvider, int>(
+  () {
+    return QuantityProvider();
+  },
+);
