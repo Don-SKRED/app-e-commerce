@@ -1,5 +1,6 @@
 import 'package:app_e_commerce/features/Console/domain/models/console_model.dart';
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
+import 'package:app_e_commerce/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:app_e_commerce/features/games/presentation/providers/quantity_provider.dart';
 import 'package:app_e_commerce/features/shopping_cart/domain/shopping_cart_model.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
@@ -18,6 +19,8 @@ class SpecificConsoleScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authControllerProvider).value;
     final quantity = ref.watch(quantityProvider);
+    final isFavorite = console != null &&
+        ref.watch(favoritesControllerProvider).any((item) => item.id == console!.id);
 
     final displayTitle = console?.name ?? "Nom console";
     final displayMarque = console?.marque ?? "Marque";
@@ -263,6 +266,23 @@ class SpecificConsoleScreen extends ConsumerWidget {
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
                 ),
               ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  onPressed: () {
+                    if (console != null) {
+                      ref
+                          .read(favoritesControllerProvider.notifier)
+                          .toggleFavorite(console!);
+                    }
+                  },
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.black,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -270,3 +290,4 @@ class SpecificConsoleScreen extends ConsumerWidget {
     );
   }
 }
+

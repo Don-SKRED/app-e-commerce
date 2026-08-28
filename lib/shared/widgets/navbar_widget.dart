@@ -1,3 +1,5 @@
+import 'package:app_e_commerce/features/favorites/presentation/controllers/favorites_controller.dart';
+import 'package:app_e_commerce/features/favorites/presentation/screens/favorites_screen.dart';
 import 'package:app_e_commerce/features/order/presentation/screens/order_screen.dart';
 import 'package:app_e_commerce/features/profile/presentation/screens/profile_screen.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
@@ -15,18 +17,16 @@ class NavigationBarWidget extends ConsumerStatefulWidget {
 }
 
 class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
-  // late UserModel? userConnected;
-  //listes des onglets tabs = onglet
-
-  //widget de la barre de navigation
   int _id = 0;
 
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(shoppingCartControllerProvider);
+    final favorites = ref.watch(favoritesControllerProvider);
 
     final tabs = [
       const Home(),
+      const FavoritesScreen(),
       const ShoppingCartScreen(),
       const OrderScreen(),
       const ProfileScreen(),
@@ -35,8 +35,19 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
     List<BottomNavigationBarItem> items = [];
     items.add(
       const BottomNavigationBarItem(
-        icon: Icon(Icons.home, size: 30),
+        icon: Icon(Icons.home, size: 28),
         label: 'Accueil',
+      ),
+    );
+
+    items.add(
+      BottomNavigationBarItem(
+        icon: Badge(
+          isLabelVisible: favorites.isNotEmpty,
+          label: Text(favorites.length.toString()),
+          child: const Icon(Icons.favorite, size: 26),
+        ),
+        label: 'Favoris',
       ),
     );
 
@@ -45,7 +56,7 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
         icon: Badge(
           isLabelVisible: cart.isNotEmpty,
           label: Text(cart.length.toString()),
-          child: Icon(Icons.shopping_cart, size: 28),
+          child: const Icon(Icons.shopping_cart, size: 26),
         ),
         label: 'Panier',
       ),
@@ -53,13 +64,14 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
 
     items.add(
       const BottomNavigationBarItem(
-        icon: Icon(Icons.list_alt_sharp, size: 30),
+        icon: Icon(Icons.list_alt_sharp, size: 28),
         label: 'Commandes',
       ),
     );
+
     items.add(
       const BottomNavigationBarItem(
-        icon: Icon(Icons.person, size: 30),
+        icon: Icon(Icons.person, size: 28),
         label: 'Profil',
       ),
     );
@@ -67,12 +79,12 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
     return Scaffold(
       body: tabs[_id],
       bottomNavigationBar: BottomNavigationBar(
-        // backgroundColor: Colors.grey ,
+        type: BottomNavigationBarType.fixed,
         elevation: 4,
         showSelectedLabels: true,
         items: items,
         currentIndex: _id,
-        selectedItemColor: Color.fromARGB(255, 142, 59, 198),
+        selectedItemColor: const Color.fromARGB(255, 142, 59, 198),
         unselectedItemColor: const Color.fromARGB(255, 194, 191, 191),
         showUnselectedLabels: true,
         onTap: (int item) {
@@ -82,3 +94,4 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
     );
   }
 }
+

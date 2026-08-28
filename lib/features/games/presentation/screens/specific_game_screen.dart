@@ -1,4 +1,5 @@
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
+import 'package:app_e_commerce/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
 import 'package:app_e_commerce/features/games/presentation/providers/quantity_provider.dart';
 import 'package:app_e_commerce/features/shopping_cart/domain/shopping_cart_model.dart';
@@ -18,6 +19,8 @@ class SpecificGameScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authControllerProvider).value;
     final quantity = ref.watch(quantityProvider); // écoute les changements
+    final isFavorite = game != null &&
+        ref.watch(favoritesControllerProvider).any((item) => item.id == game!.id);
 
     final displayTitle = game?.name ?? "Nom du jeu";
     final displayPlatforms = game != null
@@ -209,6 +212,23 @@ class SpecificGameScreen extends ConsumerWidget {
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
                 ),
               ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  onPressed: () {
+                    if (game != null) {
+                      ref
+                          .read(favoritesControllerProvider.notifier)
+                          .toggleFavorite(game!);
+                    }
+                  },
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.black,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -216,3 +236,4 @@ class SpecificGameScreen extends ConsumerWidget {
     );
   }
 }
+

@@ -1,37 +1,25 @@
+import 'package:app_e_commerce/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:app_e_commerce/features/products/domain/product_model.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class CardProduct extends StatelessWidget {
+class CardProduct extends ConsumerWidget {
   final Product product;
-  // final String title;
-  // final String subtitle;
-  // final String price;
-  // final String imageUrl;
   final VoidCallback onTap;
 
   const CardProduct({
     super.key,
     required this.product,
-    // required this.title,
-    // required this.subtitle,
-    // required this.price,
-    // required this.imageUrl,
     required this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // final displayTitle = title ?? product?.name ?? "Batman Arkham Knight";
-    // final displayPrice =
-    //     price ?? (product != null ? "${product!.price} €" : "59.99 €");
-    // final displayImage = imageUrl ?? product?.image;
-    // final displaySubtitle = subtitle ?? "Jeu vidéo";
-
-    // final hasValidImage = displayImage != null &&
-    //     displayImage.isNotEmpty &&
-    //     !displayImage.contains("TODO");
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavorite = ref.watch(favoritesControllerProvider).any(
+          (item) => item.id == product.id,
+        );
 
     return Container(
       decoration: BoxDecoration(
@@ -64,38 +52,63 @@ class CardProduct extends StatelessWidget {
                       top: Radius.circular(context.radius),
                     ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(context.radius),
-                    ),
-                    child:
-                        //  hasValidImage
-                        //     ? Image.network(
-                        //         displayImage,
-                        //         fit: BoxFit.cover,
-                        //         errorBuilder: (context, error, stackTrace) =>
-                        //             _buildPlaceholderIcon(),
-                        //       )
-                        //     : _buildPlaceholderIcon(),
-                        CachedNetworkImage(
-                          imageUrl: product.image,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.red,
-                            child: const Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(context.radius),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: product.image,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.purple.shade100,
+                              child: const Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.purple,
+                                  ),
                                 ),
                               ),
                             ),
+                            errorWidget: (context, url, error) =>
+                                _buildPlaceholderIcon(),
                           ),
-                          errorWidget: (context, url, error) =>
-                              _buildPlaceholderIcon(),
                         ),
+                      ),
+                      Positioned(
+                        top: 6,
+                        right: 6,
+                        child: Material(
+                          color: Colors.black.withAlpha(90),
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            constraints: const BoxConstraints(
+                              minWidth: 34,
+                              minHeight: 34,
+                            ),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isFavorite ? Colors.red : Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(favoritesControllerProvider.notifier)
+                                  .toggleFavorite(product);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -118,7 +131,7 @@ class CardProduct extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      product.stock.toString(),
+                      "Stock: ${product.stock}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -128,7 +141,7 @@ class CardProduct extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      product.price.toString(),
+                      "${product.price.toStringAsFixed(2)} €",
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: context.bodyFontSize,
@@ -155,3 +168,4 @@ class CardProduct extends StatelessWidget {
     );
   }
 }
+

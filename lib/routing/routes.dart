@@ -2,6 +2,7 @@ import 'package:app_e_commerce/features/Console/domain/models/console_model.dart
 import 'package:app_e_commerce/features/Console/presentation/screens/specific_console_screen.dart';
 import 'package:app_e_commerce/features/auth/presentation/screens/login_screen.dart';
 import 'package:app_e_commerce/features/auth/presentation/screens/signup_screen.dart';
+import 'package:app_e_commerce/features/favorites/presentation/screens/favorites_screen.dart';
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
 import 'package:app_e_commerce/features/games/presentation/screens/specific_game_screen.dart';
 import 'package:app_e_commerce/features/profile/presentation/screens/about_screen.dart';
@@ -33,6 +34,8 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(path: "/Home", builder: (context, state) => const Home()),
+    GoRoute(path: "/favorites", builder: (context, state) => const FavoritesScreen()),
     GoRoute(path: "/about", builder: (context, state) => const AboutScreen()),
   ],
 );
+
