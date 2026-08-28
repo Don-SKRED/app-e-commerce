@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:app_e_commerce/features/auth/domain/models/user_model.dart';
+import 'package:app_e_commerce/shared/models/user_model.dart';
 
 void main() {
   group('UserModel Tests', () {
@@ -35,20 +35,23 @@ void main() {
       expect(json['password'], equals('skred1234'));
     });
 
-    test('generateFakeToken and extractIdFromToken should encode and decode user ID', () {
-      final user = User(
-        42,
-        username: 'TestUser',
-        email: 'test@example.com',
-        password: 'password123',
-      );
+    test(
+      'generateFakeToken and extractIdFromToken should encode and decode user ID',
+      () {
+        final user = User(
+          42,
+          username: 'TestUser',
+          email: 'test@example.com',
+          password: 'password123',
+        );
 
-      final token = user.generateFakeToken();
-      expect(token, isNotEmpty);
+        final token = user.generateFakeToken();
+        expect(token, isNotEmpty);
 
-      final extractedId = User.extractIdFromToken(token);
-      expect(extractedId, equals('42'));
-    });
+        final extractedId = User.extractIdFromToken(token);
+        expect(extractedId, equals('42'));
+      },
+    );
 
     test('extractIdFromToken with invalid token should return null', () {
       final extractedId = User.extractIdFromToken('invalid_base64_token_xyz');
