@@ -1,11 +1,7 @@
-import 'package:app_e_commerce/features/Console/data/repositories/console_data.dart';
 import 'package:app_e_commerce/features/auth/presentation/controllers/auth_contoller.dart';
-import 'package:app_e_commerce/features/games/data/repositories/game_data.dart';
-import 'package:app_e_commerce/features/products/application/services/filter_services.dart';
-import 'package:app_e_commerce/features/products/application/services/sort_services.dart';
-import 'package:app_e_commerce/features/products/domain/product_model.dart';
-import 'package:app_e_commerce/shared/utils/responsive.dart';
+import 'package:app_e_commerce/features/products/presentation/controllers/product_providers.dart';
 import 'package:app_e_commerce/features/products/presentation/widgets/card_product.dart';
+import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,18 +14,14 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
-  GameDataRepository gameDataRepository = GameDataRepository();
-  ConsoleDataRepository consoleDataRepository = ConsoleDataRepository();
   final TextEditingController _searchController = TextEditingController();
-  String searchQuery = "";
 
-  List<String> sort = [
+  final List<String> sortOptions = [
     "Tri par nom(croissante)",
     "Tri par nom(décroissante)",
     "Tri par prix(croissante)",
     "Tri par prix(décroissante)",
   ];
-  String? selectedSort;
 
   @override
   void dispose() {
@@ -37,47 +29,34 @@ class _HomeState extends ConsumerState<Home> {
     super.dispose();
   }
 
-  void _applySort(List<Product> products) {
-    if (selectedSort == null) return;
-    switch (selectedSort) {
-      case "Tri par nom(croissante)":
-        sortByName(products);
-        break;
-      case "Tri par nom(décroissante)":
-        sortByDesc(products);
-        break;
-      case "Tri par prix(croissante)":
-        sortByPriceAsc(products);
-        break;
-      case "Tri par prix(décroissante)":
-        sortByPriceDesc(products);
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authControllerProvider).asData?.value;
     final username = user?.username ?? "Invité";
 
+    final searchQuery = ref.watch(productSearchProvider);
+    final selectedSort = ref.watch(productSortProvider);
+
+    final gamesAsync = ref.watch(filteredSortedGamesProvider);
+    final consolesAsync = ref.watch(filteredSortedConsolesProvider);
+
     // Calcul dynamique du nombre de colonnes pour la grille
     final crossAxisCount = context.isDesktop
         ? 5
         : context.isTablet
-        ? 3
-        : 2;
+            ? 3
+            : 2;
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           PopupMenuButton<String>(
             initialValue: selectedSort,
             onSelected: (value) {
-              setState(() {
-                selectedSort = value;
-              });
+              ref.read(productSortProvider.notifier).setSortOption(value);
             },
             itemBuilder: (context) {
-              return sort.map((element) {
+              return sortOptions.map((element) {
                 return PopupMenuItem<String>(
                   value: element,
                   child: Text(element),
@@ -166,9 +145,9 @@ class _HomeState extends ConsumerState<Home> {
                           TextField(
                             controller: _searchController,
                             onChanged: (value) {
-                              setState(() {
-                                searchQuery = value;
-                              });
+                              ref
+                                  .read(productSearchProvider.notifier)
+                                  .setSearchQuery(value);
                             },
                             decoration: InputDecoration(
                               hintText: "Rechercher un produit...",
@@ -177,10 +156,10 @@ class _HomeState extends ConsumerState<Home> {
                                   ? IconButton(
                                       icon: const Icon(Icons.clear),
                                       onPressed: () {
-                                        setState(() {
-                                          searchQuery = "";
-                                          _searchController.clear();
-                                        });
+                                        _searchController.clear();
+                                        ref
+                                            .read(productSearchProvider.notifier)
+                                            .clearSearch();
                                       },
                                     )
                                   : null,
@@ -221,116 +200,89 @@ class _HomeState extends ConsumerState<Home> {
                   ),
                 ];
               },
-              // Contenu des onglets avec grille responsive
+              // Contenu des onglets avec grille responsive via Riverpod AsyncValue
               body: Padding(
                 padding: EdgeInsets.all(context.padding),
                 child: TabBarView(
                   children: [
                     // Onglet 1 : Jeux
-                    FutureBuilder(
-                      future: gameDataRepository.readFile(),
-                      builder: (context, asyncSnapshot) {
-                        if (asyncSnapshot.connectionState ==
-                            ConnectionState.waiting) {
+                    gamesAsync.when(
+                      data: (games) {
+                        if (games.isEmpty) {
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child: Text(
+                              "Aucun produit ne correspond à votre recherche",
+                            ),
                           );
                         }
-                        if (asyncSnapshot.hasError) {
-                          return Center(
-                            child: Text("Erreur : ${asyncSnapshot.error}"),
-                          );
-                        }
-                        if (asyncSnapshot.hasData &&
-                            asyncSnapshot.data!.isNotEmpty) {
-                          var data = List<Product>.from(asyncSnapshot.data!);
-                          data = filterBySearch(data, searchQuery);
-                          _applySort(data);
-
-                          if (data.isEmpty) {
-                            return const Center(
-                              child: Text("Aucun produit ne correspond à votre recherche"),
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: context.spacing,
+                            mainAxisSpacing: context.spacing,
+                            childAspectRatio: 0.72,
+                          ),
+                          itemCount: games.length,
+                          itemBuilder: (context, index) {
+                            return CardProduct(
+                              product: games[index],
+                              onTap: () {
+                                context.push(
+                                  '/specificGame',
+                                  extra: games[index],
+                                );
+                              },
                             );
-                          }
-
-                          return GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: context.spacing,
-                                  mainAxisSpacing: context.spacing,
-                                  childAspectRatio: 0.72,
-                                ),
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              return CardProduct(
-                                product: data[index],
-                                onTap: () {
-                                  context.push(
-                                    '/specificGame',
-                                    extra: data[index],
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        } else {
-                          return const Center(child: Text("Aucune donnée"));
-                        }
+                          },
+                        );
                       },
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      error: (err, stack) => Center(
+                        child: Text("Erreur : $err"),
+                      ),
                     ),
+
                     // Onglet 2 : Consoles
-                    FutureBuilder(
-                      future: consoleDataRepository.readFile(),
-                      builder: (context, asyncSnapshot) {
-                        if (asyncSnapshot.connectionState ==
-                            ConnectionState.waiting) {
+                    consolesAsync.when(
+                      data: (consoles) {
+                        if (consoles.isEmpty) {
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child: Text(
+                              "Aucun produit ne correspond à votre recherche",
+                            ),
                           );
                         }
-                        if (asyncSnapshot.hasError) {
-                          return Center(
-                            child: Text("Erreur : ${asyncSnapshot.error}"),
-                          );
-                        }
-                        if (asyncSnapshot.hasData &&
-                            asyncSnapshot.data!.isNotEmpty) {
-                          var data = List<Product>.from(asyncSnapshot.data!);
-                          data = filterBySearch(data, searchQuery);
-                          _applySort(data);
-
-                          if (data.isEmpty) {
-                            return const Center(
-                              child: Text("Aucun produit ne correspond à votre recherche"),
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: context.spacing,
+                            mainAxisSpacing: context.spacing,
+                            childAspectRatio: 0.72,
+                          ),
+                          itemCount: consoles.length,
+                          itemBuilder: (context, index) {
+                            return CardProduct(
+                              product: consoles[index],
+                              onTap: () {
+                                context.push(
+                                  '/specificonsole',
+                                  extra: consoles[index],
+                                );
+                              },
                             );
-                          }
-
-                          return GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: context.spacing,
-                                  mainAxisSpacing: context.spacing,
-                                  childAspectRatio: 0.72,
-                                ),
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              return CardProduct(
-                                product: data[index],
-                                onTap: () {
-                                  context.push(
-                                    '/specificonsole',
-                                    extra: data[index],
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        } else {
-                          return const Center(child: Text("Aucune donnée"));
-                        }
+                          },
+                        );
                       },
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      error: (err, stack) => Center(
+                        child: Text("Erreur : $err"),
+                      ),
                     ),
                   ],
                 ),
@@ -342,5 +294,3 @@ class _HomeState extends ConsumerState<Home> {
     );
   }
 }
-
-

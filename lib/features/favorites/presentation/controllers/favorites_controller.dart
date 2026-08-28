@@ -12,7 +12,9 @@ class FavoritesController extends Notifier<List<Product>> {
   Future<void> _loadFromLocal() async {
     final repo = ref.read(favoritesRepositoryProvider);
     final savedFavorites = await repo.loadFavorites();
-    state = savedFavorites;
+    if (savedFavorites.isNotEmpty) {
+      state = savedFavorites;
+    }
   }
 
   Future<void> toggleFavorite(Product product) async {
