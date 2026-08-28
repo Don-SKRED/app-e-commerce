@@ -3,9 +3,10 @@
 [![Flutter CI/CD](https://github.com/Don-SKRED/app-e-commerce/actions/workflows/flutter_ci.yml/badge.svg)](https://github.com/Don-SKRED/app-e-commerce/actions)
 [![Flutter Version](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![Riverpod](https://img.shields.io/badge/State%20Management-Riverpod%203.x-blueviolet)](https://riverpod.dev)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture%20%2B%20DIP-brightgreen)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Une application mobile & web E-Commerce moderne développée avec **Flutter**, suivant scrupuleusement les principes de la **Clean Architecture** couplée à une organisation **Feature-First**. L'application exploite **Riverpod** pour une gestion d'état réactive, déclarative et asynchrone sans compromis.
+Une application mobile & web E-Commerce moderne développée avec **Flutter**, suivant scrupuleusement les principes de la **Clean Architecture**, de l'**Inversion de Dépendance (DIP)** et d'une organisation **Feature-First**. L'application exploite **Riverpod** pour une gestion d'état réactive, déclarative et asynchrone sans compromis.
 
 ---
 
@@ -42,7 +43,7 @@ Une application mobile & web E-Commerce moderne développée avec **Flutter**, s
 
 ### ❤️ 4. Système de Favoris & Persistance Résiliente (`features/favorites`)
 - **Gestion Temps Réel** : Ajout et retrait instantanés avec mise à jour automatique des icônes de cœur dans toute l'application et sur le badge de la barre de navigation.
-- **Persistance Locale JSON (`favorites.json`)** : Sauvegarde locale automatique via `FavoritesRepository`.
+- **Persistance Locale JSON (`favorites.json`)** : Sauvegarde locale automatique via `FavoritesRepository` (implémentant l'interface `IFavoritesRepository`).
 - **Rollback Transactionnel** : En cas d'erreur I/O lors de la sauvegarde sur disque, l'état mémoire est automatiquement restauré pour garantir une cohérence stricte avec le système de fichiers.
 
 ### 🛒 5. Panier d'Achat & Passation de Commandes (`features/shopping_cart`, `features/order`)
@@ -55,172 +56,75 @@ Une application mobile & web E-Commerce moderne développée avec **Flutter**, s
 
 ---
 
-## 🏛️ Architecture du Projet : Clean Architecture & Feature-First
+## 🏛️ Architecture Pure : Clean Architecture & Inversion de Dépendance (DIP)
 
-Le projet est structuré selon une séparation stricte des responsabilités en couches concentriques, garantissant l'indépendance de la logique métier vis-à-vis des frameworks et de l'UI.
+Le projet applique rigoureusement les principes de l'**Inversion de Dépendance** : les contrôleurs ne communiquent **jamais directement** avec la couche data, et la couche application dépend **exclusivement de contrats d'interfaces abstraites** définies dans la couche domaine.
 
 ```
-                    ┌──────────────────────────────┐
-                    │      PRESENTATION LAYER      │
-                    │   (Widgets, Screens, Views)  │
-                    └──────────────┬───────────────┘
-                                   │ dépend de
-                                   ▼
-                    ┌──────────────────────────────┐
-                    │      APPLICATION LAYER       │
-                    │  (Services Métier, Providers)│
-                    └──────────────┬───────────────┘
-                                   │ dépend de
-                                   ▼
-                    ┌──────────────────────────────┐
-                    │          DATA LAYER          │
-                    │    (Repositories, JSON/IO)   │
-                    └──────────────┬───────────────┘
-                                   │ dépend de
-                                   ▼
-                    ┌──────────────────────────────┐
-                    │         DOMAIN LAYER         │
-                    │   (Modèles Purs & Entités)   │
-                    └──────────────────────────────┘
++─────────────────────────────────────────────────────────────────────────+
+| PRESENTATION LAYER (Screens, Widgets, Notifiers)                         |
+|   - Ne dépend JAMAIS des repositories concrets.                         |
+|   - Appelle exclusivement les Services Applicatifs.                     |
++────────────────────────────────────┬────────────────────────────────────+
+                                     │ dépend de
+                                     ▼
++─────────────────────────────────────────────────────────────────────────+
+| APPLICATION LAYER (Services Métier, Use Cases, Providers Combinés)      |
+|   - Ex: AuthService, FavoritesService, GameService, OrderService        |
+|   - Dépend UNIQUEMENT des interfaces abstraites de la couche Domaine.   |
++────────────────────────────────────┬────────────────────────────────────+
+                                     │ dépend de
+                                     ▼
++─────────────────────────────────────────────────────────────────────────+
+| DOMAIN LAYER (Entités, Modèles Purs, Interfaces de Repositories)         |
+|   - Ex: IAuthRepository, IFavoritesRepository, IGameRepository, ...     |
+|   - 100% pur Dart : aucune dépendance externe (ni Flutter, ni Riverpod).|
++────────────────────────────────────▲────────────────────────────────────+
+                                     │
+                                     │ implémente (Inversion de Dépendance)
++────────────────────────────────────┴────────────────────────────────────+
+| DATA / INFRASTRUCTURE LAYER (Repositories Concrets, Persistance JSON)   |
+|   - Ex: AuthDataRepository, FavoritesRepository, GameDataRepository     |
++─────────────────────────────────────────────────────────────────────────+
 ```
 
 ### 📁 Rôle de Chaque Couche
 
 | Couche | Rôle & Contenu | Ce qu'elle NE contient PAS |
 | :--- | :--- | :--- |
-| **`domain/`** | Modèles purs (`Product`, `Game`, `Console`, `Order`, `User`), structures de données. | Aucun widget Flutter, aucun provider Riverpod, aucun accès I/O. |
-| **`data/`** | Repositories purs (`GameDataRepository`, `FavoritesRepository`, `AuthDataRepository`). Lecture/écriture JSON, gestion fichiers. | Pas de logique UI, pas de déclaration de Providers Riverpod. |
-| **`application/`** | Services métier (`AuthService`, `FavoritesService`, `QuantityService`, `calculateTotal`), Providers Riverpod d'orchestration. | Aucun widget visuel, aucun élément de rendu UI. |
-| **`presentation/`** | Screens (`Home`, `LoginScreen`, `FavoritesScreen`), Widgets (`CardProduct`), Contrôleurs d'état UI (`Notifier`, `AsyncNotifier`). | Pas d'accès direct au système de fichiers ni de requêtes I/O directes. |
-
-### 📂 Arborescence Complète des Fichiers
-
-```text
-lib/
-├── exceptions/                         # Exceptions métier typées
-│   └── storage_exception.dart          # Exception dédiée au stockage local
-├── features/
-│   ├── auth/                           # Authentification & Utilisateur
-│   │   ├── application/
-│   │   │   └── auth_service.dart       # AuthService & authServiceProvider
-│   │   ├── data/
-│   │   │   └── repositories/
-│   │   │       └── auth_data_repository.dart # Accès brut aux données users
-│   │   ├── exceptions/
-│   │   │   └── auth_exception.dart     # AuthException
-│   │   └── presentation/
-│   │       ├── controllers/
-│   │       │   └── auth_contoller.dart # AuthController (AsyncNotifier)
-│   │       ├── screens/                # LoginScreen & SignupScreen
-│   │       └── widget/                 # CustomTextField
-│   ├── Console/                        # Module Consoles
-│   │   ├── application/
-│   │   │   └── console_service.dart    # consoleDataRepositoryProvider & consolesListProvider
-│   │   ├── data/repositories/
-│   │   │   └── console_data.dart       # ConsoleDataRepository
-│   │   ├── domain/models/
-│   │   │   └── console_model.dart      # Modèle Console
-│   │   └── presentation/screens/
-│   │       └── specific_console_screen.dart
-│   ├── favorites/                      # Module Favoris
-│   │   ├── application/
-│   │   │   └── favorites_service.dart  # FavoritesService & favoritesServiceProvider
-│   │   ├── data/repositories/
-│   │   │   └── favorites_repository.dart # Persistance locale JSON
-│   │   └── presentation/
-│   │       ├── controllers/
-│   │       │   └── favorites_controller.dart # FavoritesController avec rollback
-│   │       └── screens/
-│   │           └── favorites_screen.dart
-│   ├── games/                          # Module Jeux Vidéo
-│   │   ├── application/
-│   │   │   ├── game_service.dart       # gamesListProvider & repository provider
-│   │   │   └── quantity_service.dart   # QuantityService (règles stock min/max)
-│   │   ├── data/repositories/
-│   │   │   └── game_data.dart          # GameDataRepository
-│   │   ├── domain/model/
-│   │   │   └── game_model.dart         # Modèle Game
-│   │   └── presentation/screens/
-│   │       └── specific_game_screen.dart
-│   ├── order/                          # Module Commandes
-│   │   ├── application/
-│   │   │   └── order_service.dart      # OrderService & orderServiceProvider
-│   │   ├── data/repositories/
-│   │   │   ├── order_repository.dart
-│   │   │   └── order_item_repository.dart
-│   │   ├── domain/models/
-│   │   │   ├── order_model.dart
-│   │   │   └── order_item_model.dart
-│   │   └── presentation/
-│   │       ├── controllers/
-│   │       │   ├── order_controller.dart
-│   │       │   └── order_item_controller.dart
-│   │       └── screens/
-│   │           └── order_screen.dart
-│   ├── products/                       # Module Transverse Produits
-│   │   ├── application/
-│   │   │   ├── product_providers.dart  # SearchProvider, SortProvider & Combined Providers
-│   │   │   └── services/
-│   │   │       ├── filter_services.dart # Algorithme de filtrage par nom
-│   │   │       └── sort_services.dart   # Algorithmes de tri (Nom, Prix)
-│   │   ├── domain/
-│   │   │   └── product_model.dart      # Modèle abstrait Product
-│   │   └── presentation/widgets/
-│   │       └── card_product.dart       # Widget réutilisable CardProduct
-│   ├── profile/                        # Module Profil & À Propos
-│   │   └── presentation/screens/
-│   │       ├── profile_screen.dart
-│   │       └── about_screen.dart
-│   └── shopping_cart/                  # Module Panier d'Achat
-│       ├── application/
-│       │   └── shopping_cart_service.dart # Logique métier (calculateTotal)
-│       ├── domain/
-│       │   └── shopping_cart_model.dart
-│       └── presentation/
-│           ├── controllers/
-│           │   └── shopping_cart_controller.dart
-│           └── screens/
-│               └── shopping_cart_screen.dart
-├── routing/
-│   └── routes.dart                     # Configuration centralisée GoRouter
-├── shared/
-│   ├── constants/                      # Constantes de l'application
-│   ├── models/                         # UserModel
-│   ├── screens/                        # HomeScreen
-│   ├── services/                       # Repository<T> générique et ThemeProvider
-│   ├── utils/                          # Responsive et DateUtils
-│   └── widgets/                        # NavigationBarWidget
-└── main.dart                           # Point d'entrée de l'application
-```
+| **`domain/`** | Modèles purs (`Product`, `Game`, `Console`, `Order`, `User`) et **Interfaces Abstraites de Repositories** (`IAuthRepository`, `IFavoritesRepository`, `IGameRepository`, `IConsoleRepository`, `IOrderRepository`). | Aucun widget Flutter, aucun provider Riverpod, aucun accès I/O. |
+| **`data/`** | Repositories concrets implémentant les interfaces du domaine (`AuthDataRepository`, `FavoritesRepository`, `GameDataRepository`, `ConsoleDataRepository`, `OrderRepository`). | Pas de logique UI, pas de déclaration de Providers Riverpod. |
+| **`application/`** | Services applicatifs (`AuthService`, `FavoritesService`, `GameService`, `ConsoleService`, `OrderService`, `calculateTotal`), Providers Riverpod d'orchestration. | Aucun widget visuel, aucun élément de rendu UI. |
+| **`presentation/`** | Screens (`Home`, `LoginScreen`, `FavoritesScreen`), Widgets (`CardProduct`), Contrôleurs d'état UI (`AuthController`, `FavoritesController`, `ShoppingCartController`, `OrderController`). | Pas d'accès direct aux repositories de la couche data. |
 
 ---
 
-## ⚡ Inventaire Exhaustif des Providers Riverpod (18 Providers)
+## ⚡ Inventaire Exhaustif des Providers Riverpod (21 Providers)
 
-L'application utilise **18 providers distincts** assurant l'injection de dépendances, la gestion des états asynchrones et la réactivité :
+L'application utilise **21 providers distincts** assurant l'injection de dépendances, la gestion des états asynchrones et la réactivité :
 
 | # | Nom du Provider | Type Riverpod | Couche | Rôle & Responsabilité |
 | :---: | :--- | :--- | :--- | :--- |
 | **1** | `authControllerProvider` | `AsyncNotifierProvider<AuthController, User?>` | Presentation | Gestion réactive de la session utilisateur, connexion, inscription et déconnexion. |
 | **2** | `authServiceProvider` | `Provider<AuthService>` | Application | Service métier d'authentification orchestrant la logique métier et les règles de validation. |
-| **3** | `authDataRepositoryProvider` | `Provider<AuthDataRepository>` | Application | Injection du repository d'accès aux données utilisateur. |
-| **4** | `gamesListProvider` | `FutureProvider<List<Game>>` | Application | Chargement asynchrone réactif du catalogue des jeux vidéo. |
-| **5** | `gameDataRepositoryProvider` | `Provider<GameDataRepository>` | Application | Injection du repository d'accès aux jeux. |
-| **6** | `consolesListProvider` | `FutureProvider<List<Console>>` | Application | Chargement asynchrone réactif du catalogue des consoles. |
-| **7** | `consoleDataRepositoryProvider` | `Provider<ConsoleDataRepository>` | Application | Injection du repository d'accès aux consoles. |
-| **8** | `quantityServiceProvider` | `NotifierProvider.autoDispose<QuantityService, int>` | Application | Contrôleur éphémère gérant la quantité sélectionnée avec bornes minimales (1) et maximales (stock). |
-| **9** | `productSearchProvider` | `NotifierProvider<ProductSearchController, String>` | Application | État réactif de la requête saisie dans la barre de recherche. |
-| **10** | `productSortProvider` | `NotifierProvider<ProductSortController, String?>` | Application | État réactif de l'option de tri sélectionnée dans le menu déroulant. |
-| **11** | `filteredSortedGamesProvider` | `Provider<AsyncValue<List<Game>>>` | Application | Provider calculé combinant le flux des jeux, la recherche en direct et le tri alphabétique/prix. |
-| **12** | `filteredSortedConsolesProvider` | `Provider<AsyncValue<List<Console>>>` | Application | Provider calculé combinant le flux des consoles, la recherche en direct et le tri alphabétique/prix. |
-| **13** | `favoritesControllerProvider` | `NotifierProvider<FavoritesController, List<Product>>` | Presentation | Gestion de la liste des favoris avec persistance locale et rollback automatique en cas d'erreur. |
-| **14** | `favoritesServiceProvider` | `Provider<FavoritesService>` | Application | Service applicatif exposant les opérations de persistance des favoris. |
-| **15** | `favoritesRepositoryProvider` | `Provider<FavoritesRepository>` | Application | Injection du repository de lecture/écriture du fichier `favorites.json`. |
-| **16** | `shoppingCartControllerProvider` | `NotifierProvider<ShoppingCartController, List<ShoppingCartModel>>` | Presentation | Gestion réactive du panier d'achat (ajout, modification de quantité, suppression, vidage). |
-| **17** | `orderControllerProvider` | `AsyncNotifierProvider<OrderController, List<Order>>` | Presentation | Gestion asynchrone de l'historique des commandes et passation de nouvelle commande. |
-| **18** | `orderServiceProvider` | `Provider<OrderService>` | Application | Service applicatif orchestrant la lecture et la sauvegarde des commandes. |
-| **19** | `orderRepositoryProvider` | `Provider<OrderRepository>` | Application | Injection du repository des commandes. |
-| **20** | `orderItemRepositoryProvider` | `Provider<OrderItemRepository>` | Application | Injection du repository des éléments commandés. |
+| **3** | `authDataRepositoryProvider` | `Provider<IAuthRepository>` | Application | Injection du repository abstrait d'accès aux données utilisateur (`IAuthRepository`). |
+| **4** | `gamesListProvider` | `FutureProvider<List<Game>>` | Application | Chargement asynchrone réactif du catalogue des jeux vidéo via `GameService`. |
+| **5** | `gameServiceProvider` | `Provider<GameService>` | Application | Service applicatif des jeux vidéo. |
+| **6** | `gameDataRepositoryProvider` | `Provider<IGameRepository>` | Application | Injection du repository abstrait des jeux (`IGameRepository`). |
+| **7** | `consolesListProvider` | `FutureProvider<List<Console>>` | Application | Chargement asynchrone réactif du catalogue des consoles via `ConsoleService`. |
+| **8** | `consoleServiceProvider` | `Provider<ConsoleService>` | Application | Service applicatif des consoles. |
+| **9** | `consoleDataRepositoryProvider` | `Provider<IConsoleRepository>` | Application | Injection du repository abstrait des consoles (`IConsoleRepository`). |
+| **10** | `quantityServiceProvider` | `NotifierProvider.autoDispose<QuantityService, int>` | Application | Contrôleur éphémère gérant la quantité sélectionnée avec bornes minimales (1) et maximales (stock). |
+| **11** | `productSearchProvider` | `NotifierProvider<ProductSearchController, String>` | Application | État réactif de la requête saisie dans la barre de recherche. |
+| **12** | `productSortProvider` | `NotifierProvider<ProductSortController, String?>` | Application | État réactif de l'option de tri sélectionnée dans le menu déroulant. |
+| **13** | `filteredSortedGamesProvider` | `Provider<AsyncValue<List<Game>>>` | Application | Provider calculé combinant le flux des jeux, la recherche en direct et le tri alphabétique/prix. |
+| **14** | `filteredSortedConsolesProvider` | `Provider<AsyncValue<List<Console>>>` | Application | Provider calculé combinant le flux des consoles, la recherche en direct et le tri alphabétique/prix. |
+| **15** | `favoritesControllerProvider` | `NotifierProvider<FavoritesController, List<Product>>` | Presentation | Gestion de la liste des favoris avec persistance locale et rollback automatique en cas d'erreur. |
+| **16** | `favoritesServiceProvider` | `Provider<FavoritesService>` | Application | Service applicatif exposant les opérations de persistance des favoris. |
+| **17** | `favoritesRepositoryProvider` | `Provider<IFavoritesRepository>` | Application | Injection du repository abstrait des favoris (`IFavoritesRepository`). |
+| **18** | `shoppingCartControllerProvider` | `NotifierProvider<ShoppingCartController, List<ShoppingCartModel>>` | Presentation | Gestion réactive du panier d'achat (ajout, modification de quantité, suppression, vidage). |
+| **19** | `orderControllerProvider` | `AsyncNotifierProvider<OrderController, List<Order>>` | Presentation | Gestion asynchrone de l'historique des commandes et passation de nouvelle commande. |
+| **20** | `orderServiceProvider` | `Provider<OrderService>` | Application | Service applicatif orchestrant la lecture et la sauvegarde des commandes via `IOrderRepository`. |
 | **21** | `themeControllerProvider` | `NotifierProvider<ThemeController, ThemeMode>` | Application / Shared | Gestion globale du thème applicatif (Clair / Sombre / Système). |
 
 ---
@@ -332,13 +236,6 @@ Le fichier `.github/workflows/flutter_ci.yml` automatise la validation de la qua
 ---
 
 ## 💻 Installation et Lancement
-
-### Prérequis
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version `>= 3.10.8`)
-- [Dart SDK](https://dart.dev/get-dart)
-- Android Studio / VS Code avec le plugin Flutter
-
-### Étapes d'installation
 
 1. **Cloner le dépôt** :
    ```bash

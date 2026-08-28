@@ -1,7 +1,8 @@
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
+import 'package:app_e_commerce/features/games/domain/repositories/game_repository_interface.dart';
 import 'package:app_e_commerce/shared/services/repository.dart';
 
-class GameDataRepository extends Repository<Game> {
+class GameDataRepository extends Repository<Game> implements IGameRepository {
   @override
   String get assetPath => "assets/data/games.json";
 

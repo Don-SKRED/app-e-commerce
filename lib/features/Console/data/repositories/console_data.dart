@@ -1,7 +1,8 @@
 import 'package:app_e_commerce/features/Console/domain/models/console_model.dart';
+import 'package:app_e_commerce/features/Console/domain/repositories/console_repository_interface.dart';
 import 'package:app_e_commerce/shared/services/repository.dart';
 
-class ConsoleDataRepository extends Repository<Console> {
+class ConsoleDataRepository extends Repository<Console> implements IConsoleRepository {
   @override
   String get assetPath => "assets/data/consoles.json";
 

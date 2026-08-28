@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:app_e_commerce/exceptions/storage_exception.dart';
 import 'package:app_e_commerce/features/Console/domain/models/console_model.dart';
+import 'package:app_e_commerce/features/favorites/domain/repositories/favorites_repository_interface.dart';
 import 'package:app_e_commerce/features/games/domain/model/game_model.dart';
 import 'package:app_e_commerce/features/products/domain/product_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-class FavoritesRepository {
+class FavoritesRepository implements IFavoritesRepository {
   String get filename => "favorites.json";
 
   Future<File> getLocalFile() async {
