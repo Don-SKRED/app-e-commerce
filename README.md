@@ -6,9 +6,13 @@ Une application mobile & web E-Commerce moderne développée avec **Flutter**, s
 
 ## 📸 Aperçu & Captures d'écran
 
-| Page de Connexion | Page d'Inscription |
-| :---: | :---: |
-| ![Page de Connexion](screenshots/page_de_connexion.png) | ![Page d'Inscription](screenshots/page_d_inscription.png) |
+| Page de Connexion | Page d'Inscription | Page d'Accueil | Page Profil |
+| :---: | :---: | :---: | :---: |
+| ![Connexion](screenshots/page_de_connexion.png) | ![Inscription](screenshots/page_d_inscription.png) | ![Accueil](screenshots/page_home.png) | ![Profil](screenshots/page_profile.png) |
+
+| Détails Jeu | Détails Console | Panier d'Achat | Historique Commandes |
+| :---: | :---: | :---: | :---: |
+| ![Détails Jeu](screenshots/page_info_jeux.png) | ![Détails Console](screenshots/page_info_console.png) | ![Panier](screenshots/page_panier.png) | ![Commandes](screenshots/page_commande.png) |
 
 ---
 
