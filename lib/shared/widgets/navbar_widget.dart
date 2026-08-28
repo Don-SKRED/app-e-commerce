@@ -1,3 +1,4 @@
+import 'package:app_e_commerce/features/order/presentation/screens/order_screen.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/screens/shopping_cart_screen.dart';
 import 'package:app_e_commerce/shared/screens/home.dart';
@@ -18,13 +19,16 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
 
   //widget de la barre de navigation
   int _id = 0;
-  bool hasUnread = false;
 
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(shoppingCartControllerProvider);
 
-    final tabs = [const Home(), const ShoppingCartScreen()];
+    final tabs = [
+      const Home(),
+      const ShoppingCartScreen(),
+      const OrderScreen(),
+    ];
 
     List<BottomNavigationBarItem> items = [];
     items.add(
@@ -42,6 +46,13 @@ class _NavigationBarWidgetState extends ConsumerState<NavigationBarWidget> {
           child: Icon(Icons.shopping_cart, size: 28),
         ),
         label: 'Panier',
+      ),
+    );
+
+    items.add(
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.list_alt_sharp, size: 30),
+        label: 'Commandes',
       ),
     );
 

@@ -1,3 +1,9 @@
+import 'package:app_e_commerce/features/order/data/repositories/order_item_repository.dart';
+import 'package:app_e_commerce/features/order/data/repositories/order_repository.dart';
+import 'package:app_e_commerce/features/order/domain/models/order_item_model.dart';
+import 'package:app_e_commerce/features/order/domain/models/order_model.dart';
+import 'package:app_e_commerce/features/order/presentation/controllers/order_controller.dart';
+import 'package:app_e_commerce/features/order/presentation/controllers/order_item_controller.dart';
 import 'package:app_e_commerce/features/shopping_cart/presentation/controllers/shopping_cart_controller.dart';
 import 'package:app_e_commerce/shared/utils/responsive.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +20,37 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(shoppingCartControllerProvider);
+    final orderItems = ref.watch(orderItemControllerProvider);
+    // final order = ref.watch(orderControllerProvider);
+    void addOrderItems() async {
+      if (cart.isNotEmpty) {
+        final int newId = await ref
+            .read(orderItemRepositoryProvider)
+            .generateNewId();
+
+        for (int i = 0; i < cart.length; i++) {
+          OrderItem orderItem = OrderItem(
+            id: newId,
+            quantity: cart[i].quantity,
+            unitPrice: cart[i].product.price,
+            product: cart[i].product,
+          );
+          orderItems.add(orderItem);
+        }
+      }
+
+      final int newIdOrder = await ref
+          .read(orderRepositoryProvider)
+          .generateNewId();
+
+      Order newOrder = Order(
+        id: newIdOrder,
+        date: DateTime.now(),
+        total: totalPrice(cart),
+        orderItems: orderItems,
+      );
+      ref.read(orderControllerProvider.notifier).addOrder(newOrder);
+    }
 
     return Scaffold(
       // --- Bottom sheet : total + bouton commande ---
@@ -65,8 +102,12 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                         height: context.buttonHeight,
                         child: ElevatedButton.icon(
                           onPressed: () {
+                            addOrderItems(); // ref
                             ref
                                 .read(shoppingCartControllerProvider.notifier)
+                                .clear();
+                            ref
+                                .read(orderItemControllerProvider.notifier)
                                 .clear();
                           },
                           icon: const Icon(Icons.shopping_bag_outlined),
@@ -115,7 +156,9 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                     itemBuilder: (context, index) {
                       final item = cart[index];
                       return Padding(
-                        padding: EdgeInsets.only(bottom: context.fieldSpacing * 2),
+                        padding: EdgeInsets.only(
+                          bottom: context.fieldSpacing * 2,
+                        ),
                         child: Card(
                           elevation: 2,
                           child: ListTile(
@@ -137,7 +180,9 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                             ),
                             subtitle: Text(
                               "${item.product.price.toStringAsFixed(2)} € × ${item.quantity}",
-                              style: TextStyle(fontSize: context.bodyFontSize - 2),
+                              style: TextStyle(
+                                fontSize: context.bodyFontSize - 2,
+                              ),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -154,7 +199,10 @@ class ShoppingCartScreenState extends ConsumerState<ShoppingCartScreen> {
                                 IconButton(
                                   onPressed: () {
                                     ref
-                                        .read(shoppingCartControllerProvider.notifier)
+                                        .read(
+                                          shoppingCartControllerProvider
+                                              .notifier,
+                                        )
                                         .remove(item);
                                   },
                                   icon: const Icon(

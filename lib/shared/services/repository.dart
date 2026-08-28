@@ -31,8 +31,14 @@ abstract class Repository<T> {
   Future<List<T>> readFile() async {
     final file = await initFile();
     String jsonString = await file.readAsString();
-    List jsonList = jsonDecode(jsonString);
 
+    // Fichier réellement vide (0 octet) — rien à décoder,
+    // on retourne une liste vide plutôt que de laisser jsonDecode planter.
+    if (jsonString.trim().isEmpty) {
+      return [];
+    }
+
+    List jsonList = jsonDecode(jsonString);
     List<T> list = jsonList.map((json) => fromJson(json)).toList();
 
     return list;

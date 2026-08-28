@@ -70,6 +70,9 @@ flutter:
     - assets/data/users.json
     - assets/data/consoles.json
     - assets/data/games.json
+    - assets/data/favorites.json
+    - assets/data/orders.json
+    - assets/data/order_items.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
