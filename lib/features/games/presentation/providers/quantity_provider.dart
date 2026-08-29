@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class QuantityProvider extends Notifier<int> {
+class QuantityProvider extends AutoDisposeNotifier<int> {
   @override
   int build() {
     return 1; // état initial
